@@ -79,6 +79,9 @@ details.how p{margin:6px 0 0}
 .sizehint{margin:0 0 16px;padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:var(--bg);font-size:.95rem}
 .sizehint.warn{border-color:var(--warn);color:var(--warn)}
 .rtab .sc{overflow-x:auto;border:2px solid var(--line);border-radius:16px;background:var(--bg)}
+.rtab tr.gap td{height:22px;padding:0;background:var(--soft)}
+.rtab td.n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)}
+.rtab td.n .u{font-weight:400;color:var(--muted);font-size:.85rem}
 .rtab td.rk{width:1%;font-weight:700;padding-right:0}
 .rtab td.sh{white-space:normal}
 .rtab img.thumb{width:64px;height:42px;margin-right:10px}
@@ -87,8 +90,8 @@ details.how p{margin:6px 0 0}
 .rtab td.pc{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
 .rtab a.rs{display:inline-block;padding:6px 14px;border:2px solid var(--line);border-radius:999px;color:var(--fg);font-weight:500;font-size:.9rem;text-decoration:none}
 .rtab a.rs:hover{background:var(--fg);color:var(--bg)}
-@media(max-width:719px){.rtab th,.rtab td{padding:9px 8px}.rtab img.thumb{width:44px;height:29px;margin-right:6px}}
-.tbl{margin-top:30px}
+@media(max-width:719px){.rtab th,.rtab td{padding:9px 8px}.rtab td.n{white-space:normal;font-size:.85rem}.rtab img.thumb{width:44px;height:29px;margin-right:6px}}
+.tbl{margin-top:18px}
 .tbl h2{margin-bottom:10px}
 .tbl .sc{overflow-x:auto;border:2px solid var(--line);border-radius:16px;background:var(--bg)}
 table{border-collapse:collapse;width:100%;font-size:.95rem}
@@ -163,14 +166,7 @@ p.how{margin:10px 0 0}
 .wheel-ok:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media(min-width:1000px){
   .wrap{max-width:1280px}
-  .res{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);column-gap:36px;align-items:start}
-  .res>h2,.res>#list,.res>#more{grid-column:1}
-  .res>#sizebox{grid-column:1/-1}
-  .res>#sizetable{grid-column:2;grid-row:2/span 3}
-  .res>#sizetable.tbl{margin-top:0}
-  .tbl th,.tbl td{padding:9px 10px;white-space:normal}
-  .tbl td.sh{white-space:normal}
-  .tbl img.thumb{width:44px;height:29px;margin-right:8px}
+  .rtab{max-width:900px}
 }
 @media(max-width:719px){
   .tbl th,.tbl td{white-space:normal;padding:9px 8px}
@@ -219,7 +215,6 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
     <div id="sizebox"></div>
     <h2 id="rt"></h2>
     <div class="rtab" id="list"></div>
-    <button class="more" id="more" type="button" hidden></button>
     <div class="tbl" id="sizetable"></div>
   </section>
 </div>
@@ -276,7 +271,7 @@ var EN={
 'Jouw maat is er niet. Dichtstbij: ':'Your size is not in stock. Closest: ','Niet in jouw maat':'Not in your size',
 'heren':'men','dames':'women','Bekijk in de shop':'View in the shop','Shop':'Shop',
 'Sluiting':'Closure','Voet':'Foot','Prijs':'Price','Hoe sterk de schoen gebogen is':'How strongly the shoe is downturned',
-'Jouw top 5':'Your top 5','Alle schoenen op volgorde':'All shoes ranked','Toon alleen de top 5':'Show only the top 5',
+'Schoenen op volgorde van match':'Shoes ranked by match','Alle schoenen op volgorde':'All shoes ranked','Toon alleen de top 5':'Show only the top 5',
 'Maattabel':'Size table','Schoen':'Shoe','Pasvorm':'Profile','Maat':'Size','Beschikbaar':'In stock','Basis':'Source',
 'Vul hierboven je voetlengte in om per schoen je maat te zien.':'Enter your foot length above to see your size per shoe.',
 'Vul een voetlengte tussen 15 en 33 cm in.':'Enter a foot length between 15 and 33 cm.',
@@ -445,11 +440,7 @@ function renderSizes(){
   box.innerHTML='<p class="sizehint">'+L('Bij '+fmt(len)+' cm hoort ongeveer straatmaat <b>EU '+fmt(street)+'</b>. Klimschoenen vallen kleiner uit en worden strakker gedragen.','At '+fmt(len)+' cm your street size is roughly <b>EU '+fmt(street)+'</b>. Climbing shoes run smaller and are worn tighter.')+'</p>';
   var rows=SHOES.map(function(x){return {s:x,r:score(x)}}).sort(function(x,y){return y.r.pts-x.r.pts||x.s.t-y.s.t}).map(function(x){return x.s}).filter(inStock);
   if(!rows.length){tb.innerHTML='';return}
-  var h='<h2>'+tr('Maattabel')+'</h2><div class="sc"><table><thead><tr><th>'+tr('Schoen')+'</th><th>'+tr('Maat')+'</th><th>'+tr('Basis')+'</th></tr></thead><tbody>';
-  rows.forEach(function(s){
-    h+='<tr><td class="sh">'+(s.img?'<img class="thumb" src="'+esc(s.img)+'" alt="">':'')+esc(s.b)+' <b>'+esc(s.m)+'</b></td><td class="n">'+sizeRange(s,len)+' <span class="u">'+unitLabel(s)+'</span></td><td class="s">'+esc(tr(s.src))+'</td></tr>';
-  });
-  h+='</tbody></table></div>'+
+  var h=''+
     '<p class="tblnote">'+L('De maat hangt af van je niveau en hoe strak je hem wilt (hierboven ingesteld). Leer rekt bij gebruik, synthetisch materiaal veel minder. Pas altijd aan voordat je koopt.','The size depends on your level and how snug you want them (set above). Leather stretches with use, synthetic material far less. Always try them on before you buy.')+'</p>'+
     '<details class="src"><summary>'+tr('Waar komen deze maten vandaan?')+'</summary><ul>'+
     (lang==='en'?
@@ -488,22 +479,21 @@ function render(){
   rows.sort(function(x,y){return y.r.pts-x.r.pts||x.s.t-y.s.t});
   rows=rows.filter(function(x){return inStock(x.s)});
   var n=showAll?rows.length:5;
-  var html='<div class="sc"><table><thead><tr><th></th><th>'+tr('Schoen')+'</th><th>Match</th><th></th></tr></thead><tbody>';
-  rows.slice(0,n).forEach(function(x,i){
+  var len=parseLen();
+  var html='<div class="sc"><table><thead><tr><th></th><th>'+tr('Schoen')+'</th><th>Match</th>'+(len!==null?'<th>'+tr('Maat')+'</th>':'')+'</tr></thead><tbody>';
+  rows.forEach(function(x,i){
     var s=x.s,r=x.r;
+    if(i===5)html+='<tr class="gap"><td colspan="'+(len!==null?4:3)+'"></td></tr>';
     html+='<tr><td class="rk">'+(i+1)+'</td>'+
       '<td class="sh">'+(s.img?'<img class="thumb" src="'+esc(s.img)+'" alt="'+esc(s.b+' '+s.m)+'" loading="lazy">':'')+'<span class="nm"><span class="br">'+esc(s.b)+'</span><b>'+esc(s.m)+'</b></span></td>'+
       '<td class="pc">'+r.pct+'%</td>'+
-      '<td><a class="rs" href="'+esc(shopLink(s))+'" target="_blank" rel="noopener noreferrer">'+tr('Shop')+'</a></td></tr>';
+      (len!==null?'<td class="n">'+sizeRange(s,len)+' <span class="u">'+unitLabel(s)+'</span></td>':'')+'</tr>';
   });
   html+='</tbody></table></div>';
   if(!rows.length)html='<p class="sizehint warn">'+L('Geen schoenen op voorraad in jouw maat. Vraag het personeel naar andere opties.','No shoes in stock in your size. Ask the staff about other options.')+'</p>';
   document.getElementById('list').innerHTML=html;
   renderSizes();
-  var more=document.getElementById('more');
-  more.hidden=rows.length<=5;
-  more.textContent=showAll?tr('Toon alleen de top 5'):L('Toon alle '+rows.length+' schoenen','Show all '+rows.length+' shoes');
-  document.getElementById('rt').textContent=showAll?tr('Alle schoenen op volgorde'):tr('Jouw top 5');
+  document.getElementById('rt').textContent=tr('Schoenen op volgorde van match');
 }
 function build(){
   Object.keys(Q).forEach(function(k){
@@ -525,7 +515,6 @@ document.getElementById('q').addEventListener('change',function(e){
   state[k]=num?Number(raw):raw;
   hint(k);render();
 });
-document.getElementById('more').addEventListener('click',function(){showAll=!showAll;render()});
 document.getElementById('len').addEventListener('input',function(e){state.len=e.target.value;render()});
 Array.prototype.forEach.call(document.querySelectorAll('.lang'),function(b){
   b.addEventListener('click',function(){
