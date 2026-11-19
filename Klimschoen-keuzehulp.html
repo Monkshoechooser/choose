@@ -437,7 +437,7 @@ function renderSizes(){
     box.innerHTML='<p class="sizehint warn">'+tr('Vul een voetlengte tussen 15 en 33 cm in.')+'</p>';tb.innerHTML='';return;
   }
   var street=r5((len+1.5)*1.5);
-  box.innerHTML='<p class="sizehint">'+L('Bij '+fmt(len)+' cm hoort ongeveer straatmaat <b>EU '+fmt(street)+'</b>. Klimschoenen vallen kleiner uit en worden strakker gedragen.','At '+fmt(len)+' cm your street size is roughly <b>EU '+fmt(street)+'</b>. Climbing shoes run smaller and are worn tighter.')+'</p>';
+  box.innerHTML='<p class="sizehint">'+L('Bij '+fmt(len)+' cm hoort ongeveer straatmaat <b>EU '+fmt(street)+'</b> (SoiLL: <b>US '+fmt(usM(street))+' men / '+fmt(usW(street))+' wmn</b>). Klimschoenen vallen kleiner uit en worden strakker gedragen.','At '+fmt(len)+' cm your street size is roughly <b>EU '+fmt(street)+'</b> (SoiLL: <b>US '+fmt(usM(street))+' men / '+fmt(usW(street))+' wmn</b>). Climbing shoes run smaller and are worn tighter.')+'</p>';
   var rows=SHOES.map(function(x){return {s:x,r:score(x)}}).sort(function(x,y){return y.r.pts-x.r.pts||x.s.t-y.s.t}).map(function(x){return x.s}).filter(inStock);
   if(!rows.length){tb.innerHTML='';return}
   var h=''+
