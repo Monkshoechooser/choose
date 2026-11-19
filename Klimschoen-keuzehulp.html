@@ -265,7 +265,8 @@ var EN={
 'Lange routes. Je staat uren in je schoenen.':'Long routes. You stand in your shoes for hours.',
 'Hal, buiten, boulder en route door elkaar.':'Gym, outdoors, boulder and routes mixed.',
 'Low volume':'Low volume','Normaal':'Normal','Wide':'Wide',
-'Smalle hiel en voorvoet, schoenen zijn vaak te ruim.':'Narrow heel and forefoot, shoes are often too roomy.',
+'Smalle hiel en voorvoet, schoenen zijn vaak te ruim. Low volume modellen zijn er niet in grote maten.':'Narrow heel and forefoot, shoes are often too roomy. Low volume models are not available in large sizes.',
+'Low volume schoenen zijn er niet in jouw maat. Kies Normaal of Wide.':'No low volume shoes in your size. Choose Normal or Wide.',
 'Standaard voet, de meeste modellen passen.':'Standard foot, most models fit.',
 'Brede voorvoet, schoenen knellen snel.':'Wide forefoot, shoes pinch easily.',
 'Comfortabel':'Comfortable','Neutraal':'Neutral','Aggressief':'Aggressive',
@@ -324,7 +325,7 @@ var Q={
   level:{o:[[1,'Beginner'],[2,'Intermediate'],[3,'Expert']],d:1,
     h:{1:'Eerste jaar of nog niet vaak per week aan de wand.',2:'Je klimt regelmatig en voelt wat een schoen doet.',3:'Je klimt zwaar en technisch en wilt maximale precisie.'}},
   width:{o:[[1,'Low volume'],[2,'Normaal'],[3,'Wide']],d:2,
-    h:{1:'Smalle hiel en voorvoet, schoenen zijn vaak te ruim.',2:'Standaard voet, de meeste modellen passen.',3:'Brede voorvoet, schoenen knellen snel.'}},
+    h:{1:'Smalle hiel en voorvoet, schoenen zijn vaak te ruim. Low volume modellen zijn er niet in grote maten.',2:'Standaard voet, de meeste modellen passen.',3:'Brede voorvoet, schoenen knellen snel.'}},
   snug:{o:[[1,'Comfortabel'],[2,'Normaal'],[3,'Strak']],d:2,
     h:{1:'Tenen liggen plat of raken net de voorkant. Voor lange routes en beginners.',2:'Tenen raken de voorkant en krullen licht. Voor de meeste klimsessies.',3:'Tenen duidelijk gekruld. Voor steile, moeilijke routes en je trekt hem uit tussen pogingen.'}}
 };
@@ -443,6 +444,8 @@ function renderSizes(){
   }
   var street=r5((len+1.5)*1.5);
   box.innerHTML='<p class="sizehint">'+L('Bij '+fmt(len)+' cm hoort ongeveer straatmaat <b>EU '+fmt(street)+'</b> (SoiLL: <b>US '+fmt(usM(street))+' men / '+fmt(usW(street))+' wmn</b>). Klimschoenen vallen kleiner uit en worden strakker gedragen.','At '+fmt(len)+' cm your street size is roughly <b>EU '+fmt(street)+'</b> (SoiLL: <b>US '+fmt(usM(street))+' men / '+fmt(usW(street))+' wmn</b>). Climbing shoes run smaller and are worn tighter.')+'</p>';
+  if(state.width===1&&!SHOES.some(function(s){return !s.kid&&s.W.indexOf(1)>-1&&stockInfo(s,len).ok}))
+    box.innerHTML+='<p class="sizehint warn">'+tr('Low volume schoenen zijn er niet in jouw maat. Kies Normaal of Wide.')+'</p>';
   var rows=SHOES.map(function(x){return {s:x,r:score(x)}}).sort(function(x,y){return prk(x.s)-prk(y.s)||y.r.pts-x.r.pts||x.s.t-y.s.t}).map(function(x){return x.s}).filter(inStock);
   if(!rows.length){tb.innerHTML='';return}
   var h=''+
