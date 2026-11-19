@@ -133,6 +133,20 @@ footer{margin-top:32px;font-size:.88rem;color:var(--muted);max-width:68ch;border
 .alt .field input{width:5.5rem}
 @media(min-width:720px){.q{grid-template-columns:1fr 1fr}.q fieldset.full{grid-column:1/-1}}
 .sizegrid{display:grid;grid-template-columns:minmax(0,1fr)}
+.rtab tr[data-i]{cursor:pointer}
+.rtab tr[data-i]:hover td{background:var(--soft)}
+.rtab tr[data-i]:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.pop{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.pop[hidden]{display:none}
+.popc{position:relative;background:var(--bg);border:2px solid var(--line);border-radius:20px;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:18px}
+.popx{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:1.6rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.popx:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pop img{display:block;width:100%;height:auto;max-height:46vh;object-fit:contain;background:#fff;border-radius:12px;margin:46px 0 12px}
+.pop .pb{font-size:.85rem;color:var(--muted)}
+.pop h3{font-family:var(--head);font-weight:400;font-size:1.7rem;letter-spacing:.03em;text-transform:uppercase;margin:0 0 8px}
+.pop .pm{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 10px;font-weight:700}
+.pop .pm span{color:var(--accent)}
+.pop p{margin:0 0 10px}
 .sizegrid .alt{margin-top:0}
 .q fieldset.full{margin-bottom:0}
 .q{padding-bottom:14px}
@@ -221,6 +235,7 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
     <div class="tbl" id="sizetable"></div>
   </section>
 </div>
+<div class="pop" id="pop" hidden role="dialog" aria-modal="true" aria-labelledby="popt"><div class="popc"><button type="button" class="popx" id="popx" aria-label="Sluiten">&times;</button><div id="popb"></div></div></div>
 
 <footer data-t="foot">
   De scores en maten zijn een indicatie. Elke voet is anders en maten vallen per merk en per model anders uit. Pas schoenen altijd aan, bij voorkeur in de klimhal, en vraag om advies van het personeel.
@@ -270,7 +285,7 @@ var EN={
 'Eenvoudiger dan je nodig hebt':'Simpler than you need','Niet voor jouw niveau':'Not for your level',
 'Veelzijdig':'Versatile','Binnen budget':'Within budget','Boven je budget':'Over your budget',
 'Vul je voetlengte in voor je maat.':'Enter your foot length for your size.',
-'Jouw maat':'Your size','Beschikbaar in jouw maat: ':'Available in your size: ',
+'Jouw maat':'Your size','Sluiten':'Close','Beschikbaar in jouw maat: ':'Available in your size: ',
 'Jouw maat is er niet. Dichtstbij: ':'Your size is not in stock. Closest: ','Niet in jouw maat':'Not in your size',
 'heren':'men','dames':'women','Bekijk in de shop':'View in the shop','Shop':'Shop',
 'Sluiting':'Closure','Voet':'Foot','Prijs':'Price','Hoe sterk de schoen gebogen is':'How strongly the shoe is downturned',
@@ -466,7 +481,7 @@ function render(){
   rows.forEach(function(x,i){
     var s=x.s,r=x.r;
     if(i===5)html+='<tr class="gap"><td colspan="'+(len!==null?4:3)+'"></td></tr>';
-    html+='<tr><td class="rk">'+(i+1)+'</td>'+
+    html+='<tr data-i="'+SHOES.indexOf(s)+'" tabindex="0" role="button"><td class="rk">'+(i+1)+'</td>'+
       '<td class="sh">'+(s.img?'<img class="thumb" src="'+esc(s.img)+'" alt="'+esc(s.b+' '+s.m)+'" loading="lazy">':'')+'<span class="nm"><span class="br">'+esc(s.b)+'</span><b>'+esc(s.m)+'</b></span></td>'+
       '<td class="pc">'+r.pct+'%</td>'+
       (len!==null?'<td class="n">'+sizeRange(s,len)+' <span class="u">'+unitLabel(s)+'</span></td>':'')+'</tr>';
@@ -477,6 +492,33 @@ function render(){
   renderSizes();
   document.getElementById('rt').textContent=tr('Schoenen op volgorde van match');
 }
+/* Pop-up met grote foto. Extra tekst per schoen: veld x (NL) en xe (EN) bij de schoen. */
+var popFocus=null;
+function openPop(i){
+  var s=SHOES[i];if(!s)return;
+  var r=score(s),len=parseLen();
+  var note=lang==='en'&&s.e?s.e:s.n;
+  var extra=lang==='en'&&s.xe?s.xe:(s.x||'');
+  document.getElementById('popb').innerHTML=
+    (s.img?'<img src="'+esc(s.img)+'" alt="'+esc(s.b+' '+s.m)+'">':'')+
+    '<div class="pb">'+esc(s.b)+'</div><h3 id="popt">'+esc(s.m)+'</h3>'+
+    '<div class="pm"><span>'+r.pct+'% match</span>'+(len!==null?'<span>'+tr('Jouw maat')+' '+sizeRange(s,len)+' '+unitLabel(s)+'</span>':'')+'</div>'+
+    '<p>'+esc(note||'')+'</p>'+(extra?'<p>'+esc(extra)+'</p>':'');
+  document.getElementById('popx').setAttribute('aria-label',tr('Sluiten'));
+  popFocus=document.activeElement;
+  var pop=document.getElementById('pop');pop.hidden=false;document.body.style.overflow='hidden';
+  document.getElementById('popx').focus();
+}
+function closePop(){
+  var pop=document.getElementById('pop');if(pop.hidden)return;
+  pop.hidden=true;document.body.style.overflow='';
+  if(popFocus&&popFocus.focus)try{popFocus.focus()}catch(e){}
+}
+document.getElementById('list').addEventListener('click',function(e){var t=e.target.closest('tr[data-i]');if(t)openPop(Number(t.getAttribute('data-i')))});
+document.getElementById('list').addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var t=e.target.closest('tr[data-i]');if(t){e.preventDefault();openPop(Number(t.getAttribute('data-i')))}});
+document.getElementById('popx').addEventListener('click',closePop);
+document.getElementById('pop').addEventListener('click',function(e){if(e.target===this)closePop()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
 function build(){
   Object.keys(Q).forEach(function(k){
     var box=document.querySelector('[data-k="'+k+'"]');
