@@ -395,32 +395,25 @@ function usM(eu){return r5(0.8*(eu-35)+3.5)}
 function usW(eu){return usM(eu)+1.5}
 function unitLabel(s){return isUS(s)?'US':'EU'}
 function one(s,eu){return isUS(s)?fmt(usM(eu))+' '+'men'+' / '+fmt(usW(eu))+' '+'wmn':fmt(eu)}
-function dRange(s){
+function dMid(s){
   var d=s.byLevel?s.byLevel[state.level]:s.d;
-  var mn=d[0],mx=d[1],sp=mx-mn;
-  if(state.snug===1)return [mn,mn+sp/2];
-  if(state.snug===3)return [mn+sp/2,mx];
-  return [mn+sp/4,mx-sp/4];
+  return (d[0]+d[1])/2;
 }
+/* Eén maat per schoen: het midden van het advies van het merk. Comfortabel is precies een halve maat groter, strak een halve maat kleiner. */
+function targetEU(s,len){return r5((len+1.5)*1.5-dMid(s)+(2-state.snug)*0.5)}
+function targetUS(s,len){return r5(0.8*((len+1.5)*1.5-dMid(s)-35)+3.5)+(2-state.snug)*0.5}
 function sizeRange(s,len){
-  var street=(len+1.5)*1.5,o=dRange(s);
-  var lo=r5(street-o[1]),hi=r5(street-o[0]);
-  if(hi<lo){var t=lo;lo=hi;hi=t}
-  function rg(f){var a=f(lo),b=f(hi);return a===b?fmt(a):fmt(a)+'-'+fmt(b)}
-  if(isUS(s))return rg(usM)+' '+'men'+' / '+rg(usW)+' '+'wmn';
-  return rg(function(x){return x});
+  if(isUS(s)){var u=targetUS(s,len);return fmt(u)+' men / '+fmt(u+1.5)+' wmn'}
+  return fmt(targetEU(s,len));
 }
 
 /* Voorraad: s.stock = EU-maten die de hal heeft (uit het assortimentsbestand). */
-function euRange(s,len){
-  var street=(len+1.5)*1.5,o=dRange(s);
-  return [r5(street-o[1]),r5(street-o[0])];
-}
 function stockInfo(s,len){
-  var r=euRange(s,len),lo=Math.min(r[0],r[1]),hi=Math.max(r[0],r[1]);
-  var hit=s.stock.filter(function(x){return x>=lo&&x<=hi});
+  var us=isUS(s),t=us?targetUS(s,len):targetEU(s,len);
+  var teu=us?35+(t-3.5)/0.8:t;
+  var hit=s.stock.filter(function(x){return Math.abs((us?usM(x):x)-t)<=0.5});
   if(hit.length)return {ok:true,list:hit};
-  var below=s.stock.filter(function(x){return x<lo}),above=s.stock.filter(function(x){return x>hi});
+  var below=s.stock.filter(function(x){return x<teu}),above=s.stock.filter(function(x){return x>teu});
   return {ok:false,near:[below.length?below[below.length-1]:null,above.length?above[0]:null].filter(function(x){return x!==null})};
 }
 function stockText(s){
