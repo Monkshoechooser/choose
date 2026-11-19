@@ -78,6 +78,16 @@ details.how p{margin:6px 0 0}
 .size .u{color:var(--muted);font-size:.85rem;font-weight:500}
 .sizehint{margin:0 0 16px;padding:12px 16px;border:2px solid var(--line);border-radius:12px;background:var(--bg);font-size:.95rem}
 .sizehint.warn{border-color:var(--warn);color:var(--warn)}
+.rtab .sc{overflow-x:auto;border:2px solid var(--line);border-radius:16px;background:var(--bg)}
+.rtab td.rk{width:1%;font-weight:700;padding-right:0}
+.rtab td.sh{white-space:normal}
+.rtab img.thumb{width:64px;height:42px;margin-right:10px}
+.rtab .nm{display:inline-block;vertical-align:middle}
+.rtab .br{display:block;font-size:.8rem;color:var(--muted)}
+.rtab td.pc{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.rtab a.rs{display:inline-block;padding:6px 14px;border:2px solid var(--line);border-radius:999px;color:var(--fg);font-weight:500;font-size:.9rem;text-decoration:none}
+.rtab a.rs:hover{background:var(--fg);color:var(--bg)}
+@media(max-width:719px){.rtab th,.rtab td{padding:9px 8px}.rtab img.thumb{width:44px;height:29px;margin-right:6px}}
 .tbl{margin-top:30px}
 .tbl h2{margin-bottom:10px}
 .tbl .sc{overflow-x:auto;border:2px solid var(--line);border-radius:16px;background:var(--bg)}
@@ -208,7 +218,7 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
   <section class="res" aria-live="polite">
     <div id="sizebox"></div>
     <h2 id="rt"></h2>
-    <ol class="list" id="list"></ol>
+    <div class="rtab" id="list"></div>
     <button class="more" id="more" type="button" hidden></button>
     <div class="tbl" id="sizetable"></div>
   </section>
@@ -264,7 +274,7 @@ var EN={
 'Vul je voetlengte in voor je maat.':'Enter your foot length for your size.',
 'Jouw maat':'Your size','Beschikbaar in jouw maat: ':'Available in your size: ',
 'Jouw maat is er niet. Dichtstbij: ':'Your size is not in stock. Closest: ','Niet in jouw maat':'Not in your size',
-'heren':'men','dames':'women','Bekijk in de shop':'View in the shop',
+'heren':'men','dames':'women','Bekijk in de shop':'View in the shop','Shop':'Shop',
 'Sluiting':'Closure','Voet':'Foot','Prijs':'Price','Hoe sterk de schoen gebogen is':'How strongly the shoe is downturned',
 'Jouw top 5':'Your top 5','Alle schoenen op volgorde':'All shoes ranked','Toon alleen de top 5':'Show only the top 5',
 'Maattabel':'Size table','Schoen':'Shoe','Pasvorm':'Profile','Maat':'Size','Beschikbaar':'In stock','Basis':'Source',
@@ -478,26 +488,16 @@ function render(){
   rows.sort(function(x,y){return y.r.pts-x.r.pts||x.s.t-y.s.t});
   rows=rows.filter(function(x){return inStock(x.s)});
   var n=showAll?rows.length:5;
-  var html='';
+  var html='<div class="sc"><table><thead><tr><th></th><th>'+tr('Schoen')+'</th><th>Match</th><th></th></tr></thead><tbody>';
   rows.slice(0,n).forEach(function(x,i){
     var s=x.s,r=x.r;
-    html+='<li class="card'+(i===0?' top':'')+'">'+
-      '<div class="rank">'+(i+1)+'</div>'+
-      '<div class="name"><div class="brand">'+esc(s.b)+'</div><div class="model">'+esc(s.m)+'</div></div>'+
-      '<div class="pct">'+r.pct+'<small>%</small></div>'+
-      '<div class="bar"><i style="width:'+r.pct+'%"></i></div>'+
-      (s.img?'<img class="photo" src="'+esc(s.img)+'" alt="'+esc(s.b+' '+s.m)+'" loading="lazy">':'')+
-      '<div class="meta"><span class="profile" title="'+esc(tr('Hoe sterk de schoen gebogen is'))+'">'+glyph(s.a)+'<b>'+tr(AG[s.a])+'</b></span>'+
-      '<span>'+tr('Sluiting')+' <b>'+esc(tr(s.c))+'</b></span><span>'+tr('Voet')+' <b>'+tr(WD[s.w])+'</b></span><span>'+tr('Prijs')+' <b>'+TIER[s.t]+'</b></span></div>'+
-      '<p class="note">'+esc(lang==='en'&&s.e?s.e:s.n)+'</p>'+
-      '<p class="size">'+sizeText(s)+'</p>'+
-      stockLine(s)+
-      '<div class="tags">'+r.tags.slice(0,4).map(function(t){return '<span class="tag">'+esc(t)+'</span>'}).join('')+
-      r.warn.slice(0,2).map(function(t){return '<span class="tag w">'+esc(t)+'</span>'}).join('')+'</div>'+
-      '<a class="shop" href="'+esc(shopLink(s))+'" target="_blank" rel="noopener noreferrer">'+tr('Bekijk in de shop')+'</a>'+
-    '</li>';
+    html+='<tr><td class="rk">'+(i+1)+'</td>'+
+      '<td class="sh">'+(s.img?'<img class="thumb" src="'+esc(s.img)+'" alt="'+esc(s.b+' '+s.m)+'" loading="lazy">':'')+'<span class="nm"><span class="br">'+esc(s.b)+'</span><b>'+esc(s.m)+'</b></span></td>'+
+      '<td class="pc">'+r.pct+'%</td>'+
+      '<td><a class="rs" href="'+esc(shopLink(s))+'" target="_blank" rel="noopener noreferrer">'+tr('Shop')+'</a></td></tr>';
   });
-  if(!rows.length)html='<li class="sizehint warn" style="list-style:none">'+L('Geen schoenen op voorraad in jouw maat. Vraag het personeel naar andere opties.','No shoes in stock in your size. Ask the staff about other options.')+'</li>';
+  html+='</tbody></table></div>';
+  if(!rows.length)html='<p class="sizehint warn">'+L('Geen schoenen op voorraad in jouw maat. Vraag het personeel naar andere opties.','No shoes in stock in your size. Ask the staff about other options.')+'</p>';
   document.getElementById('list').innerHTML=html;
   renderSizes();
   var more=document.getElementById('more');
