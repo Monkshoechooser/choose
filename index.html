@@ -447,21 +447,7 @@ function renderSizes(){
   var rows=SHOES.map(function(x){return {s:x,r:score(x)}}).sort(function(x,y){return y.r.pts-x.r.pts||x.s.t-y.s.t}).map(function(x){return x.s}).filter(inStock);
   if(!rows.length){tb.innerHTML='';return}
   var h=''+
-    '<p class="tblnote">'+L('De maat hangt af van je niveau en hoe strak je hem wilt (hierboven ingesteld). Leer rekt bij gebruik, synthetisch materiaal veel minder. Pas altijd aan voordat je koopt.','The size depends on your level and how snug you want them (set above). Leather stretches with use, synthetic material far less. Always try them on before you buy.')+'</p>'+
-    '<details class="src"><summary>'+tr('Waar komen deze maten vandaan?')+'</summary><ul>'+
-    (lang==='en'?
-    '<li><b>Brand advice:</b> sizing advice from the manufacturer. Scarpa Vapor V: 0.5 to 2 sizes smaller. La Sportiva Kubo: 0.5 to 1.5 sizes smaller. SoiLL Torque: beginners and intermediates one size up, experts your street size, while reviewers choose 0.5 to 1 size smaller.</li>'+
-    '<li><b>Sizes in stock:</b> the stock comes from the gym\'s product file. Only shoes in a size within your range are shown.</li>'+
-    '<li><b>Review:</b> experience from testers or climbers. Less certain than brand advice.</li>'+
-    '<li><b>Rule of thumb:</b> I found no specific advice for this model. The range comes from the brand\'s general advice.</li>'+
-    '<li><b>US sizes (SoiLL):</b> men\'s size derived from the EU size; women\'s size is about 1.5 higher.</li>'
-    :
-    '<li><b>Merkadvies:</b> maatadvies van de fabrikant. Scarpa Vapor V: 0,5 tot 2 maten kleiner. La Sportiva Kubo: 0,5 tot 1,5 maat kleiner. SoiLL Torque: beginners en intermediates een maat groter, experts je straatmaat, terwijl reviewers 0,5 tot 1 maat kleiner kiezen.</li>'+
-    '<li><b>Maten uit het assortiment:</b> de voorraad komt uit het bestand van de hal. Je ziet alleen schoenen waarvan er een maat in jouw bereik is.</li>'+
-    '<li><b>Review:</b> ervaring van testers of klimmers. Dit is minder zeker dan merkadvies.</li>'+
-    '<li><b>Vuistregel:</b> voor dit model vond ik geen specifiek advies. Het bereik komt uit het algemene advies van het merk.</li>'+
-    '<li><b>US-maten (SoiLL):</b> herenmaat afgeleid van de EU-maat; de damesmaat is ongeveer 1,5 hoger.</li>')+
-    '</ul></details>';
+    '<p class="tblnote">'+L('De maat hangt af van je niveau en hoe strak je hem wilt (hierboven ingesteld). Leer rekt bij gebruik, synthetisch materiaal veel minder. Pas altijd aan voordat je koopt.','The size depends on your level and how snug you want them (set above). Leather stretches with use, synthetic material far less. Always try them on before you buy.')+'</p>';
   tb.innerHTML=h;
 }
 /* Zonder eigen productlink (veld url bij de schoen) zoekt de knop de schoen op monkshop.nl. */
