@@ -200,7 +200,6 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
   <form class="q" id="q" onsubmit="return false">
     <fieldset><legend data-t="lg_level">Niveau</legend><div class="opts" data-k="level"></div><p class="hint" data-h="level"></p></fieldset>
     <fieldset><legend data-t="lg_width">Voetbreedte</legend><div class="opts" data-k="width"></div><p class="hint" data-h="width"></p></fieldset>
-    <fieldset><legend data-t="lg_aggr">Pasvorm</legend><div class="opts" data-k="aggr"></div><p class="hint" data-h="aggr"></p></fieldset>
     <fieldset><legend data-t="snugq">Hoe strak wil je hem?</legend><div class="opts" data-k="snug"></div><p class="hint" data-h="snug"></p></fieldset>
     <fieldset class="full"><legend data-t="lg_size">Jouw maat</legend>
       <div class="sizegrid">
@@ -314,8 +313,6 @@ var Q={
     h:{1:'Eerste jaar of nog niet vaak per week aan de wand.',2:'Je klimt regelmatig en voelt wat een schoen doet.',3:'Je klimt zwaar en technisch en wilt maximale precisie.'}},
   width:{o:[[1,'Low volume'],[2,'Normaal'],[3,'Wide']],d:2,
     h:{1:'Smalle hiel en voorvoet, schoenen zijn vaak te ruim.',2:'Standaard voet, de meeste modellen passen.',3:'Brede voorvoet, schoenen knellen snel.'}},
-  aggr:{o:[[1,'Comfortabel'],[2,'Neutraal'],[3,'Aggressief']],d:2,
-    h:{1:'Vlakke schoen voor lange sessies en vertrouwen op kleine voetjes.',2:'Een middenweg: bruikbaar op veel soorten routes.',3:'Sterk gebogen voor overhang en kleine grepen. Minder comfortabel.'}},
   snug:{o:[[1,'Comfortabel'],[2,'Normaal'],[3,'Strak']],d:2,
     h:{1:'Tenen liggen plat of raken net de voorkant. Voor lange routes en beginners.',2:'Tenen raken de voorkant en krullen licht. Voor de meeste klimsessies.',3:'Tenen duidelijk gekruld. Voor steile, moeilijke routes en je trekt hem uit tussen pogingen.'}}
 };
@@ -370,11 +367,10 @@ function score(s){
   if(s.kid){var kl=parseLen();if(kl!==null&&kl<=23){tags.push(tr('Kindermodel'))}else{pts-=40;warn.push(tr('Kindermodel'))}}
   if(s.lv.indexOf(l)>-1){pts+=30;tags.push(tr('Past bij je niveau'))}
   pts+=fit(s.W,state.width,20,8);
-  pts+=fit(s.A,state.aggr,15,6);
   if(state.closure==='any')pts+=10;
   else if(s.c===state.closure){pts+=10;tags.push(L('Sluiting: ','Closure: ')+tr(s.c))}
   else warn.push(L('Heeft ','Has ')+tr(s.c));
-  return {pts:pts,pct:Math.min(100,Math.max(0,Math.round(pts/75*100))),tags:tags,warn:warn};
+  return {pts:pts,pct:Math.min(100,Math.max(0,Math.round(pts/60*100))),tags:tags,warn:warn};
 }
 /* Maten. Straatmaat (EU) = (voetlengte in cm + 1,5) x 1,5. Dat klopt met de maattabel van Black Diamond (EU 40 = 25,0 cm, EU 44 = 27,7 cm). */
 function parseLen(){
@@ -485,14 +481,6 @@ function build(){
     }).join('');
     hint(k);
   });
-  syncAggr();
-}
-/* Beginners krijgen geen aggressieve pasvorm te kiezen. */
-function syncAggr(){
-  var beg=state.level===1;
-  if(beg&&state.aggr===3){state.aggr=2;var n=document.getElementById('aggr-1');if(n)n.checked=true;hint('aggr')}
-  var a=document.getElementById('aggr-2');
-  if(a)a.parentNode.hidden=beg;
 }
 function hint(k){
   var el=document.querySelector('[data-h="'+k+'"]');
@@ -503,7 +491,6 @@ document.getElementById('q').addEventListener('change',function(e){
   var raw=e.target.value;
   var num=Q[k].o.some(function(o){return typeof o[0]==='number'});
   state[k]=num?Number(raw):raw;
-  if(k==='level')syncAggr();
   hint(k);render();
 });
 document.getElementById('len').addEventListener('input',function(e){state.len=e.target.value;render()});
