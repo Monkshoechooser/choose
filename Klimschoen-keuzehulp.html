@@ -403,9 +403,10 @@ function dMid(s){
   var d=s.byLevel?s.byLevel[state.level]:s.d;
   return (d[0]+d[1])/2;
 }
-/* Eén maat per schoen: het midden van het advies van het merk. Comfortabel is precies een halve maat groter, strak een halve maat kleiner. */
-function targetEU(s,len){return r5((len+1.5)*1.5-dMid(s)+(2-state.snug)*0.5)}
-function targetUS(s,len){return r5(0.8*((len+1.5)*1.5-dMid(s)-35)+3.5)+(2-state.snug)*0.5}
+/* Eén maat per schoen: het midden van het advies van het merk. Comfortabel is precies een halve maat groter, strak een halve maat kleiner. Intermediate en expert: alles een halve maat kleiner. */
+function lvOff(){return state.level>=2?-0.5:0}
+function targetEU(s,len){return r5((len+1.5)*1.5-dMid(s)+(2-state.snug)*0.5+lvOff())}
+function targetUS(s,len){return r5(0.8*((len+1.5)*1.5-dMid(s)-35)+3.5)+(2-state.snug)*0.5+lvOff()}
 function sizeRange(s,len){
   if(isUS(s)){var u=targetUS(s,len);return fmt(u)+' men / '+fmt(u+1.5)+' wmn'}
   return fmt(targetEU(s,len));
