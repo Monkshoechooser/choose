@@ -154,7 +154,7 @@ footer{margin-top:32px;font-size:.88rem;color:var(--muted);max-width:68ch;border
 .pop .pm span{color:var(--accent)}
 .pop p{margin:0 0 10px}
 .sizegrid .alt{margin-top:0}
-.q fieldset.full{margin-bottom:0}
+.q fieldset:last-of-type{margin-bottom:0}
 .q{padding-bottom:14px}
 #althint:empty{display:none}
 @media(min-width:720px){
@@ -217,7 +217,6 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
   <form class="q" id="q" onsubmit="return false">
     <fieldset><legend data-t="lg_level">Niveau</legend><div class="opts" data-k="level"></div><p class="hint" data-h="level"></p></fieldset>
     <fieldset><legend data-t="lg_width">Voetbreedte</legend><div class="opts" data-k="width"></div><p class="hint" data-h="width"></p></fieldset>
-    <fieldset><legend data-t="snugq">Hoe strak wil je hem?</legend><div class="opts" data-k="snug"></div><p class="hint" data-h="snug"></p></fieldset>
     <fieldset class="full"><legend data-t="lg_size">Jouw maat</legend>
       <div class="sizegrid">
       <div class="cmcol">
@@ -232,6 +231,7 @@ body{margin:0}[hidden]{display:none!important}img.photo{max-width:100%}
       <p class="hint" id="althint"></p>
       </div>
     </fieldset>
+    <fieldset><legend data-t="snugq">Hoe strak wil je hem?</legend><div class="opts" data-k="snug"></div><p class="hint" data-h="snug"></p></fieldset>
   </form>
 
   <section class="res" aria-live="polite">
